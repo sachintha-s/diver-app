@@ -45,12 +45,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:889620068557:android:5c371162778f6e05cb5184",
+        "mobilesdk_app_id": "1:889620068557:android:d8906a2adbb2b3e4cb5184",
         "android_client_info": {
           "package_name": "com.example.driver_app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "889620068557-2pdgrolp6pqjtv4vmri35ck9etq8032e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.driver_app",
+            "certificate_hash": "a107e302d9d26529e26a33f3897e319e2e771822"
+          }
+        },
         {
           "client_id": "889620068557-51f5bip99g1idu5rgmk89q6kdee85uum.apps.googleusercontent.com",
           "client_type": 3
