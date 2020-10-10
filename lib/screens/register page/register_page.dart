@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_app/screens/home%20page/home_page.dart';
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
 import 'package:driver_app/services/database/database.dart';
 import 'package:driver_app/shared/circular_indicator.dart';
 import 'package:driver_app/shared/textfield_model.dart';
 import "package:flutter/material.dart";
-
-import '../home.dart';
 
 class RegisterPage extends StatefulWidget {
   final String mobile;
@@ -117,35 +116,35 @@ class _RegisterPageState extends State<RegisterPage> {
                         height: 20,
                       ),
                       TextFieldModel(
-                        onSavedFunction: (value) => userFirstName = value,
+                        onSavedFunction: (value) => userLastName = value,
                         hintText: "Last name",
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       TextFieldModel(
-                        onSavedFunction: (value) => userFirstName = value,
+                        onSavedFunction: (value) => userAddressLine1 = value,
                         hintText: "Address line 1",
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       TextFieldModel(
-                        onSavedFunction: (value) => userFirstName = value,
+                        onSavedFunction: (value) => userAddressLine2 = value,
                         hintText: "Address line 3",
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       TextFieldModel(
-                        onSavedFunction: (value) => userFirstName = value,
+                        onSavedFunction: (value) => userAddressLine3 = value,
                         hintText: "Address line 3",
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       TextFieldModel(
-                        onSavedFunction: (value) => userFirstName = value,
+                        onSavedFunction: (value) => userEmail = value,
                         hintText: "E-mail",
                       ),
                     ],
@@ -222,7 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: (context) {
                             //return ProfilePage(uid: uId);
-                            return HomePage();
+                            return DriverHomePage();
                           }));
                         } catch (e) {
                           print(e);

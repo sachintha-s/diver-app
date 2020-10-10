@@ -6,7 +6,7 @@ class Database {
   Database({this.uid});
 
   final CollectionReference customerData =
-      FirebaseFirestore.instance.collection('User');
+      FirebaseFirestore.instance.collection('Driver');
 
   Future setUserData(
       String firstName,
@@ -44,5 +44,10 @@ class Database {
 
   Future<QuerySnapshot> getMobileData(String uid) async {
     return await customerData.where('uid', isEqualTo: uid).get();
+  }
+
+  //get delivery request
+  Future<QuerySnapshot> getTripRequest(String uid) async {
+    return await customerData.doc(uid).collection("deliveryRequest").get();
   }
 }

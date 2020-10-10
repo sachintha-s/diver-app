@@ -20,8 +20,9 @@ class MyApp extends StatelessWidget {
       auth: Auth(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'We Zent',
+        title: 'WeZent',
         theme: ThemeData(
+          canvasColor: Colors.transparent,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           primaryColor: Hexcolor('#3FC060'),
         ),
