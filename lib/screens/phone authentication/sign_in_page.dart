@@ -71,7 +71,6 @@ class _AuthScreeenState extends State<AuthScreeen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-
                 //'EDIT' button will pop the dialog box
                 FlatButton(
                   onPressed: () {
@@ -109,7 +108,7 @@ class _AuthScreeenState extends State<AuthScreeen> {
                       });
                     } catch (e) {
                       print(e);
-                      errorCode(e.message,deviceSize);
+                      errorCode(e.message, deviceSize);
                     }
                   },
                   child: Text(
@@ -133,7 +132,9 @@ class _AuthScreeenState extends State<AuthScreeen> {
       return Text(
         "Confirm ",
         style: TextStyle(
-            fontSize: deviceSize.height * 0.029, color: Colors.black, fontWeight: FontWeight.bold),
+            fontSize: deviceSize.height * 0.029,
+            color: Colors.black,
+            fontWeight: FontWeight.bold),
       );
     }
 
@@ -144,7 +145,7 @@ class _AuthScreeenState extends State<AuthScreeen> {
         });
   }
 
-  void errorCode(e,Size deviceSize) {
+  void errorCode(e, Size deviceSize) {
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -184,15 +185,16 @@ class _AuthScreeenState extends State<AuthScreeen> {
     Auth auth = AuthProvider.of(context).auth;
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomPadding: false,
         body: Builder(
-      builder: (context) => Stack(
-        children: <Widget>[
-          signUpWidget(auth, _deviceSize),
-          if (loading) Indicator()
-        ],
-      ),
-    ));
+          builder: (context) => Stack(
+            children: <Widget>[
+              signUpWidget(auth, _deviceSize),
+              if (loading) Indicator()
+            ],
+          ),
+        ));
   }
 
   Widget signUpWidget(auth, deviceSize) {
@@ -219,7 +221,7 @@ class _AuthScreeenState extends State<AuthScreeen> {
                 Container(
                   child: CountryCodePicker(
                     initialSelection: "+94",
-                   // dialogSize: Size(50, 200),
+                    // dialogSize: Size(50, 200),
                     onInit: (value) {
                       //countryCode set to initial value
                       countryCode = value.dialCode;
@@ -232,7 +234,7 @@ class _AuthScreeenState extends State<AuthScreeen> {
                 SizedBox(width: 5),
                 //add textfild for enter phone number,
                 Container(
-                  width: deviceSize.width*0.6,
+                  width: deviceSize.width * 0.6,
                   child: Form(
                     key: _formKey,
                     child: TextFormField(
@@ -315,9 +317,6 @@ class _AuthScreeenState extends State<AuthScreeen> {
               ),
             ),
           ),
-          RaisedButton(onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile()));
-          },)
         ],
       ),
     );

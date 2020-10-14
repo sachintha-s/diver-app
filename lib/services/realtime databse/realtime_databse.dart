@@ -47,10 +47,18 @@ class RealtimeDatabase {
   }
 
   //delete request
-  void updateDriverRequest(String _did, String pickUpAddress,
-      String dropAddress, double distance, double fare) {
-    DeliveryRequest request =
-        DeliveryRequest(pickUpAddress, dropAddress, distance, fare);
+  void updateDriverRequest(
+      String _did,
+      String pickUpAddress,
+      String dropAddress,
+      double distance,
+      double fare,
+      double pickLat,
+      double pickLong,
+      double destLat,
+      double destLong) {
+    DeliveryRequest request = DeliveryRequest(pickUpAddress, dropAddress,
+        distance, fare, pickLat, pickLong, destLat, destLong);
     deliverRequestsReference
         .child("Drivers")
         .child(_did)
@@ -94,19 +102,23 @@ class DeliveryRequest {
   String dropAddress;
   double distance;
   double fare;
+  double pickLat;
+  double pickLong;
+  double destLat;
+  double destLong;
 
-  DeliveryRequest(
-    this.pickUpAddress,
-    this.dropAddress,
-    this.distance,
-    this.fare,
-  );
+  DeliveryRequest(this.pickUpAddress, this.dropAddress, this.distance,
+      this.fare, this.pickLat, this.pickLong, this.destLat, this.destLong);
 
   DeliveryRequest.fromSnapshot(DataSnapshot snapshot)
       : pickUpAddress = snapshot.value["pickUpAddress"],
         dropAddress = snapshot.value["dropAddress"],
         distance = snapshot.value["distance"],
-        fare = snapshot.value["fare"];
+        fare = snapshot.value["fare"],
+        pickLat = snapshot.value["pickLat"],
+        pickLong = snapshot.value["pickLong"],
+        destLat = snapshot.value["destLat"],
+        destLong = snapshot.value["destLong"];
 
   toJson() {
     return {
@@ -114,6 +126,10 @@ class DeliveryRequest {
       'dropAddress': dropAddress,
       'distance': distance,
       'fare': fare,
+      'pickLat': pickLat,
+      'pickLong': pickLong,
+      'destLat': destLat,
+      'destLong': destLong,
     };
   }
 }

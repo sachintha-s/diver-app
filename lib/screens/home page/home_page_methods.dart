@@ -44,7 +44,19 @@ class HomePageMethods {
         polylineCoordinates, _polylines);
   }
 
-  void getRequest(String uid, BuildContext context) {
+  void getRequest(
+      String uid,
+      BuildContext context,
+      startTimer,
+      _settingModalBottomSheet(
+    context,
+    String pickUpAddress,
+    String dropAddress,
+    double distance,
+    int fare,
+    String uid,
+    LatLng pickUpLocation,
+  )) {
     try {
       DatabaseReference deliverRequestsReference = FirebaseDatabase.instance
           .reference()
@@ -68,18 +80,32 @@ class HomePageMethods {
 
           String pickUpAddress = dataSnapshot.value["pickUpAddress"];
           String dropAddress = dataSnapshot.value["dropAddress"];
-          int distance = dataSnapshot.value["distance"];
+          double distance = dataSnapshot.value["distance"];
           int fare = dataSnapshot.value["fare"];
 
+          LatLng pickUpLocation = LatLng(
+              dataSnapshot.value["pickLat"], dataSnapshot.value["pickLong"]);
+          // LatLng destLocation = LatLng(
+          //     dataSnapshot.value["destLat"], dataSnapshot.value["destLong"]);
+
           _settingModalBottomSheet(
-              context, pickUpAddress, dropAddress, distance, fare, uid);
+            context,
+            pickUpAddress,
+            dropAddress,
+            distance,
+            fare,
+            uid,
+            pickUpLocation,
+          );
         }
+
+        startTimer;
 
         await Future.delayed(Duration(seconds: 15));
         try {
           if (Navigator.of(context).canPop()) {
             Navigator.pop(context);
-            getRequest(uid, context);
+            getRequest(uid, context, startTimer, _settingModalBottomSheet);
           }
         } catch (e) {
           print(e);
@@ -170,226 +196,5 @@ class HomePageMethods {
         ),
       ),
     );
-  }
-
-  void _settingModalBottomSheet(context, String pickUpAddress,
-      String dropAddress, int distance, int fare, String uid) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            height: 360,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  height: 70,
-                  width: 70,
-                  child: FloatingActionButton(
-                    onPressed: null,
-                    backgroundColor: Colors.tealAccent[400],
-                    child: Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 2)),
-                        child: Center(
-                          child: Text(
-                            "10",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )),
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                    height: 70,
-                    decoration: BoxDecoration(color: Colors.white),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "$distance" "KM        :        USD $fare",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                      color: Colors.white,
-                    ),
-                    height: 190,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            child: Column(
-                              children: [
-                                Container(
-                                  color: Colors.white,
-                                  height: 30,
-                                  child: Center(
-                                      child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "From : ",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        Text(
-                                          "$pickUpAddress",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                                ),
-                                Container(
-                                  color: Colors.white,
-                                  height: 30,
-                                  child: Center(
-                                      child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "To      : ",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        Text(
-                                          "$dropAddress",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 9,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 2),
-                                  child: Container(
-                                    child: RaisedButton(
-                                      child: Text(
-                                        "ACCEPT",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        RealtimeDatabase(uid: uid)
-                                            .setCurrentDelivery();
-                                        return Navigator.pushReplacement(
-                                            context, MaterialPageRoute(
-                                                builder: (context) {
-                                          return DriverTrackingPage();
-                                        }));
-                                      },
-                                      color: Colors.tealAccent[400],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 2),
-                                  child: Container(
-                                    child: RaisedButton(
-                                      child: Text(
-                                        "DECLINE",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        RealtimeDatabase realtimeDatabase;
-                                        realtimeDatabase = RealtimeDatabase(
-                                            lat: null, long: null, uid: null);
-                                        realtimeDatabase.updateDriverRequest(
-                                            uid, null, null, null, null);
-                                        HomePageMethods()
-                                            .getRequest(uid, context);
-                                      },
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    )),
-              ],
-            ),
-          );
-        });
   }
 }

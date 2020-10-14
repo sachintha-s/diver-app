@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/screens/home%20page/home_page_methods.dart';
+import 'package:driver_app/screens/tracking%20page/traking_page.dart';
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
 import 'package:driver_app/services/database/database.dart';
 import 'package:driver_app/services/realtime%20databse/realtime_databse.dart';
+import 'package:driver_app/shared/circular_indicator.dart';
 import 'package:driver_app/shared/map_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -78,6 +80,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   bool isOnline = false;
 
+  bool loading = false;
+
+  int _start = 10;
+  Timer _timer;
+
   @override
   void initState() {
     //create an instance of location
@@ -92,11 +99,288 @@ class _DriverHomePageState extends State<DriverHomePage> {
     auth = AuthProvider.of(context).auth;
     auth.currentUser().then((user) {
       uid = user.uid;
-      HomePageMethods().getRequest(uid, context);
+      HomePageMethods()
+          .getRequest(uid, context, startTimer(_timer,_start), _settingModalBottomSheet);
       print("testinng");
     });
 
     location = new Location();
+  }
+
+  startTimer(Timer _timer, int _start) {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) => setState(
+        () {
+          if (_start < 1) {
+            timer.cancel();
+          } else {
+            _start = _start - 1;
+          }
+        },
+      ),
+    );
+  }
+
+  void _settingModalBottomSheet(
+    context,
+    String pickUpAddress,
+    String dropAddress,
+    double distance,
+    int fare,
+    String uid,
+    LatLng pickUpLocation,
+  ) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            height: 360,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  height: 70,
+                  width: 70,
+                  child: FloatingActionButton(
+                    onPressed: null,
+                    backgroundColor: Colors.tealAccent[400],
+                    child: Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2)),
+                        child: Center(
+                          child: Text(
+                            "$_start",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                    height: 70,
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "$distance" "KM        :        USD $fare",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                      color: Colors.white,
+                    ),
+                    height: 190,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            child: Column(
+                              children: [
+                                Container(
+                                  color: Colors.white,
+                                  height: 30,
+                                  child: Center(
+                                      child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "From : ",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          width: 30,
+                                        ),
+                                        Text(
+                                          "$pickUpAddress",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                                ),
+                                Container(
+                                  color: Colors.white,
+                                  height: 30,
+                                  child: Center(
+                                      child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "To      : ",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          width: 30,
+                                        ),
+                                        Text(
+                                          "$dropAddress",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 9,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 2),
+                                  child: Container(
+                                    child: RaisedButton(
+                                      child: Text(
+                                        "ACCEPT",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          loading = true;
+                                        });
+                                        RealtimeDatabase(uid: uid)
+                                            .setCurrentDelivery();
+                                        RealtimeDatabase(uid: uid)
+                                            .updateDriverRequest(
+                                                uid,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                null);
+                                        await Future.delayed(
+                                            Duration(seconds: 2));
+                                        setState(() {
+                                          loading = false;
+                                        });
+                                        return Navigator.pushReplacement(
+                                            context, MaterialPageRoute(
+                                                builder: (context) {
+                                          return DeliveryTrackingPage(
+                                            pickUpLocation: pickUpLocation,
+                                          );
+                                        }));
+                                      },
+                                      color: Colors.tealAccent[400],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 2),
+                                  child: Container(
+                                    child: RaisedButton(
+                                      child: Text(
+                                        "DECLINE",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        RealtimeDatabase realtimeDatabase;
+                                        realtimeDatabase = RealtimeDatabase(
+                                            lat: null, long: null, uid: null);
+                                        realtimeDatabase.updateDriverRequest(
+                                            uid,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null);
+                                        HomePageMethods().getRequest(
+                                            uid,
+                                            context,
+                                            startTimer,
+                                            _settingModalBottomSheet);
+                                      },
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    )),
+              ],
+            ),
+          );
+        });
   }
 
   void goOnlineMethod() {
@@ -136,9 +420,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
           database = RealtimeDatabase(lat: null, long: null, uid: null);
           database.updateData(uid, address);
         }
-        setState(() {
-          address = _address[0].locality;
-        });
+        if (this.mounted) {
+          setState(() {
+            address = _address[0].locality;
+          });
+        }
         print("adoooooooooooooo " + address);
       }
     });
@@ -287,8 +573,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
             ),
           ),
         ),
+        if (loading) Indicator()
       ],
     ));
   }
-
 }

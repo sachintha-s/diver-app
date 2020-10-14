@@ -43,8 +43,8 @@ class Auth {
             builder: (context) => AlertDialog(
               titleTextStyle: TextStyle(
                   fontFamily: 'GANTICS',
-                  fontSize: _deviceSize.width*0.08,
-                  letterSpacing: 2,
+                  fontSize: _deviceSize.width*0.05,
+                  letterSpacing: 1,
                   color: Colors.green),
               title: Center(child: Text("Verify $mobile")),
               content: Container(
@@ -58,7 +58,7 @@ class Auth {
                       height: 10,
                     ),
                     PinCodeTextField(
-                      pinBoxWidth: _deviceSize.width*0.04,
+                      pinBoxWidth: _deviceSize.width*0.08,
                       pinBoxHeight: _deviceSize.height*0.05,
                       hasUnderline: true,
                       pinBoxOuterPadding: const EdgeInsets.all(4),
