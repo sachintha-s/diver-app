@@ -81,10 +81,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
   bool isOnline = false;
 
   bool loading = false;
-
-  int _start = 10;
-  Timer _timer;
-
   @override
   void initState() {
     //create an instance of location
@@ -99,28 +95,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
     auth = AuthProvider.of(context).auth;
     auth.currentUser().then((user) {
       uid = user.uid;
-      HomePageMethods()
-          .getRequest(uid, context, startTimer(_timer,_start), _settingModalBottomSheet);
+      HomePageMethods().getRequest(uid, context, _settingModalBottomSheet);
       print("testinng");
     });
 
     location = new Location();
-  }
-
-  startTimer(Timer _timer, int _start) {
-    const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
-      oneSec,
-      (Timer timer) => setState(
-        () {
-          if (_start < 1) {
-            timer.cancel();
-          } else {
-            _start = _start - 1;
-          }
-        },
-      ),
-    );
   }
 
   void _settingModalBottomSheet(
@@ -154,7 +133,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             border: Border.all(color: Colors.black, width: 2)),
                         child: Center(
                           child: Text(
-                            "$_start",
+                            "12",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -228,11 +207,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                           width: 30,
                                         ),
                                         Text(
-                                          "$pickUpAddress",
+                                          pickUpAddress.length < 16
+                                              ? pickUpAddress
+                                              : pickUpAddress.substring(0, 15) +
+                                                  "...",
                                           style: TextStyle(
                                               color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
+                                              fontSize: 20,),
                                         ),
                                       ],
                                     ),
@@ -262,11 +243,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                           width: 30,
                                         ),
                                         Text(
-                                          "$dropAddress",
+                                          dropAddress.length < 16
+                                              ? dropAddress
+                                              : dropAddress.substring(0, 15) +
+                                                  "...",
                                           style: TextStyle(
                                               color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
+                                              fontSize: 20,),
                                         ),
                                       ],
                                     ),
@@ -361,11 +344,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                             null,
                                             null,
                                             null);
-                                        HomePageMethods().getRequest(
-                                            uid,
-                                            context,
-                                            startTimer,
-                                            _settingModalBottomSheet);
+                                        HomePageMethods().getRequest(uid,
+                                            context, _settingModalBottomSheet);
                                       },
                                       color: Colors.red,
                                     ),

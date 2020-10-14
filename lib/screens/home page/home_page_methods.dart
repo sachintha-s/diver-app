@@ -47,7 +47,6 @@ class HomePageMethods {
   void getRequest(
       String uid,
       BuildContext context,
-      startTimer,
       _settingModalBottomSheet(
     context,
     String pickUpAddress,
@@ -99,13 +98,11 @@ class HomePageMethods {
           );
         }
 
-        startTimer;
-
         await Future.delayed(Duration(seconds: 15));
         try {
           if (Navigator.of(context).canPop()) {
             Navigator.pop(context);
-            getRequest(uid, context, startTimer, _settingModalBottomSheet);
+            getRequest(uid, context, _settingModalBottomSheet);
           }
         } catch (e) {
           print(e);
