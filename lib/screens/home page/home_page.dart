@@ -303,6 +303,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                             context, MaterialPageRoute(
                                                 builder: (context) {
                                           return DeliveryTrackingPage(
+                                            pickupAddress: pickUpAddress,
+                                            dropAddress: dropAddress,
+                                            fare: fare.toString(),
+                                            disance: distance.toString(),
+
                                             pickUpLocation: pickUpLocation,
                                           );
                                         }));

@@ -23,8 +23,18 @@ const double CAMERA_BEARING = 16;
 
 class DeliveryTrackingPage extends StatefulWidget {
   final LatLng pickUpLocation;
+  final String disance;
+  final String fare;
+  final String dropAddress;
+  final String pickupAddress;
 
-  const DeliveryTrackingPage({Key key, @required this.pickUpLocation})
+  const DeliveryTrackingPage(
+      {Key key,
+      @required this.pickUpLocation,
+      this.disance,
+      this.fare,
+      this.dropAddress,
+      this.pickupAddress})
       : super(key: key);
   @override
   _DeliveryTrackingPageState createState() => _DeliveryTrackingPageState();
@@ -71,6 +81,8 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
 
   LatLng driverCurrentLocation;
   LatLng pickUpLocation;
+
+  bool isConfirm = false;
 
   @override
   void initState() {
@@ -154,7 +166,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
       PolylineId id = PolylineId("poly");
       _polylines.add(Polyline(
           width: 5, // set the width of the polylines
-          polylineId:id,
+          polylineId: id,
           visible: true,
           jointType: JointType.round,
           startCap: Cap.buttCap,
@@ -190,35 +202,68 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
     // }
 
     return Scaffold(
-        body: Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        GoogleMap(
-            myLocationEnabled: true,
-            compassEnabled: false,
-            tiltGesturesEnabled: false,
-            markers: _markers,
-            polylines: _polylines,
-            zoomControlsEnabled: false,
-            mapType: MapType.normal,
-            initialCameraPosition: initialCameraPosition,
-            onMapCreated: (GoogleMapController controller) {
-              controller.setMapStyle(Utils.mapStyles);
-              _googleMapController.complete(controller);
-              // my map has completed being created;
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: GoogleMap(
+                myLocationEnabled: true,
+                compassEnabled: false,
+                tiltGesturesEnabled: false,
+                markers: _markers,
+                polylines: _polylines,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                initialCameraPosition: initialCameraPosition,
+                onMapCreated: (GoogleMapController controller) {
+                  controller.setMapStyle(Utils.mapStyles);
+                  _googleMapController.complete(controller);
+                  // my map has completed being created;
 
-              // i'm ready to show the pins on the map
-              showPinsOnMap();
-            }),
-        FlatButton(
-            onPressed: () {
-              print(widget.pickUpLocation);
-            },
-            child: Container(
-              height: 50,
-              width: 100,
-            ))
-      ],
-    ));
+                  // i'm ready to show the pins on the map
+                  showPinsOnMap();
+                }),
+          ),
+          Positioned(
+            bottom: 25,
+            child: InkWell(
+                onTap: () {
+                  //dtabase query for store flag
+                  Database(uid: uid).setDeliveryData(
+                      widget.disance,
+                      widget.dropAddress,
+                      widget.pickupAddress,
+                      widget.fare,
+                      true,
+                      false);
+                  setState(() {
+                    isConfirm = true;
+                  });
+                },
+                child: !isConfirm
+                    ? Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Confirm Document",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        height: 50,
+                        width: 300,
+                      )
+                    : SizedBox()),
+          )
+        ],
+      ),
+    );
   }
 }

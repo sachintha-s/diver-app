@@ -34,6 +34,20 @@ class Database {
     });
   }
 
+  //add delivery data to driver
+  Future setDeliveryData(String distance, String dropAddress,String pickup,
+      String fare, bool isDocumentAccept, bool isComplete) async {
+    return await customerData.doc(uid).collection("deliveryData").add({
+     
+        "distance":distance,
+        "dropAddress":dropAddress,
+        "pickupAddress":pickup,
+        "fare":fare,
+        "isDocumentAccept":isDocumentAccept,
+        "isComplete":isComplete,
+    });
+  }
+
   Future<QuerySnapshot> searchUserData(String firstName) async {
     return await customerData.where('firstName', isEqualTo: firstName).get();
   }
