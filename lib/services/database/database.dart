@@ -34,8 +34,16 @@ class Database {
     });
   }
 
+  //update isCopmlete field as true
+  Future updateDeliverState(String id) async {
+    return await customerData.doc(uid).collection("deliveryData").doc(id).update({
+      "isComplete":true,
+    }).then((value) => print("User Updated"))
+    .catchError((error) => print("Failed to update user: $error"));
+  }
+
   //add delivery data to driver
-  Future setDeliveryData(String distance, String dropAddress,String pickup,
+  Future<DocumentReference> setDeliveryData(String distance, String dropAddress,String pickup,
       String fare, bool isDocumentAccept, bool isComplete) async {
     return await customerData.doc(uid).collection("deliveryData").add({
      

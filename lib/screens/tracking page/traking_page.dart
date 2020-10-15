@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_app/screens/home%20page/home_page.dart';
 import 'package:driver_app/screens/home%20page/home_page_methods.dart';
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
@@ -83,6 +84,8 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
   LatLng pickUpLocation;
 
   bool isConfirm = false;
+  bool isCompleate = false;
+  String currentDeleveryId;
 
   @override
   void initState() {
@@ -228,42 +231,80 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
           ),
           Positioned(
             bottom: 25,
-            child: InkWell(
-                onTap: () {
-                  //dtabase query for store flag
-                  Database(uid: uid).setDeliveryData(
-                      widget.disance,
-                      widget.dropAddress,
-                      widget.pickupAddress,
-                      widget.fare,
-                      true,
-                      false);
-                  setState(() {
-                    isConfirm = true;
-                  });
-                },
-                child: !isConfirm
-                    ? Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Confirm Document",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        height: 50,
-                        width: 300,
-                      )
-                    : SizedBox()),
+            child: _confirmOrCompleateBtn(),
           )
         ],
       ),
+    );
+  }
+
+  Widget _confirmOrCompleateBtn() {
+    return InkWell(
+      onTap: () {
+        //dtabase query for store delivery data
+        if (!isConfirm) {
+          Database(uid: uid)
+              .setDeliveryData(widget.disance, widget.dropAddress,
+                  widget.pickupAddress, widget.fare, true, false)
+              .then((value) {
+            currentDeleveryId = value.id;
+          });
+          setState(() {
+            isConfirm = true;
+          });
+          //now we should change driver and user map
+
+
+        } else {
+          //data base query for update
+          Database(uid: uid).updateDeliverState(currentDeleveryId);
+          setState(() {
+            isCompleate = true;
+          });
+          //send massage to user for inform the delivery has compleated.
+
+
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => DriverHomePage()));
+        }
+      },
+      child: !isConfirm
+          ? Container(
+              alignment: Alignment.center,
+              child: Text(
+                "Confirm Document",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  letterSpacing: 1,
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              height: 50,
+              width: 300,
+            )
+          : !isCompleate
+              ? Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Completed",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  height: 50,
+                  width: 300,
+                )
+              : SizedBox(),
     );
   }
 }
