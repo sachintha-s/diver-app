@@ -243,36 +243,49 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
       onTap: () {
         //dtabase query for store delivery data
         if (!isConfirm) {
-          Database(uid: uid)
-              .setDeliveryData(widget.disance, widget.dropAddress,
-                  widget.pickupAddress, widget.fare, true, false)
+          showSheet("Are You Sure?",
+                  "If you have accept order from user please Comfirm.")
               .then((value) {
-            currentDeleveryId = value.id;
+            if (value) {
+              Database(uid: uid)
+                  .setDeliveryData(widget.disance, widget.dropAddress,
+                      widget.pickupAddress, widget.fare, true, false)
+                  .then((value) {
+                currentDeleveryId = value.id;
+              });
+              setState(() {
+                isConfirm = true;
+              });
+              //now we should change driver and user map
+            }
           });
-          setState(() {
-            isConfirm = true;
-          });
-          //now we should change driver and user map
-
-
         } else {
-          //data base query for update
-          Database(uid: uid).updateDeliverState(currentDeleveryId);
-          setState(() {
-            isCompleate = true;
+          showSheet(
+                  "Are You Sure?", "If you have Completed order Please Confirm.")
+              .then((value) {
+            if (value) {
+              //data base query for update
+              Database(uid: uid).updateDeliverState(currentDeleveryId);
+              setState(() {
+                isCompleate = true;
+              });
+              //send massage to user for inform the delivery has compleated.
+
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => DriverHomePage()));
+            }
           });
-          //send massage to user for inform the delivery has compleated.
-
-
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => DriverHomePage()));
         }
       },
-      child: !isConfirm
+      child: !(isConfirm && isCompleate)
           ? Container(
               alignment: Alignment.center,
               child: Text(
-                "Confirm Document",
+                !isConfirm
+                    ? "Confirm Document"
+                    : !isCompleate
+                        ? "Completed"
+                        : "",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -284,27 +297,90 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               height: 50,
-              width: 300,
+              width: 250,
             )
-          : !isCompleate
-              ? Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Completed",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  height: 50,
-                  width: 300,
-                )
-              : SizedBox(),
+          : SizedBox(),
     );
+  }
+
+  Future showSheet(String title, String des) async {
+    return await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              color: Colors.white,
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                Container(
+                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10,),
+                    child: Text(
+                      des,
+                      softWrap: true,
+                    )),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Container(
+                          child: RaisedButton(
+                            child: Text(
+                              "CONFIRM",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Container(
+                          child: RaisedButton(
+                            child: Text(
+                              "CANCEL",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        });
   }
 }
