@@ -71,8 +71,8 @@ class HomePageMethods {
           .onChildAdded
           .listen((event) async {
         if (isNotTriggered) {
-          print("Request has been sent");
           isNotTriggered = !isNotTriggered;
+          print("Request has been sent");
           DataSnapshot dataSnapshot = await deliverRequestsReference
               .child(driverId)
               .once()
@@ -83,9 +83,12 @@ class HomePageMethods {
           double distance = dataSnapshot.value["distance"];
           int fare = dataSnapshot.value["fare"];
           String userId = dataSnapshot.value["uid"];
+          double pickLat = dataSnapshot.value["pickLat"];
+          double pickLong = dataSnapshot.value["pickLong"];
 
-          LatLng pickUpLocation = LatLng(
-              dataSnapshot.value["pickLat"], dataSnapshot.value["pickLong"]);
+          print("pickLat : $pickLat " + "pickLong : $pickLong");
+
+          LatLng pickUpLocation = LatLng(pickLat, pickLong);
           // LatLng destLocation = LatLng(
           //     dataSnapshot.value["destLat"], dataSnapshot.value["destLong"]);
 
@@ -102,6 +105,7 @@ class HomePageMethods {
         }
 
         await Future.delayed(Duration(seconds: 15));
+
         try {
           if (Navigator.of(context).canPop()) {
             Navigator.pop(context);
@@ -110,7 +114,6 @@ class HomePageMethods {
         } catch (e) {
           print(e);
         }
-        isNotTriggered = !isNotTriggered;
 
         print("Request expired");
       });

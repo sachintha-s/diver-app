@@ -48,6 +48,12 @@ class RealtimeDatabase {
   }
 
   //delete request
+  void deleteDriverRequest(
+      String driverId,) {
+    deliverRequestsReference.child("Drivers").child(driverId).remove();
+  }
+
+  //delete request
   void updateDriverRequest(
       String driverId,
       String pickUpAddress,

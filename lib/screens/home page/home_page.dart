@@ -69,7 +69,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   //user's initial location and the current location as it moves
   LocationData currentLocation;
-  RealtimeDatabase database;
+  RealtimeDatabase realtimeDatabase;
 
   //crate globalkey of form
   GlobalKey<FormState> _formKey = GlobalKey();
@@ -287,18 +287,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                         });
                                         RealtimeDatabase(driverId: driverId)
                                             .setCurrentDelivery(userId);
-                                        RealtimeDatabase(driverId: driverId)
-                                            .updateDriverRequest(
-                                                driverId,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                null);
+                                        realtimeDatabase = RealtimeDatabase(
+                                            lat: null,
+                                            long: null,
+                                            driverId: null);
+                                        realtimeDatabase
+                                            .deleteDriverRequest(driverId);
                                         await Future.delayed(
                                             Duration(seconds: 2));
                                         setState(() {
@@ -338,24 +332,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20)),
-                                      onPressed: () {
+                                      onPressed: () async {
                                         Navigator.pop(context);
-                                        RealtimeDatabase realtimeDatabase;
                                         realtimeDatabase = RealtimeDatabase(
                                             lat: null,
                                             long: null,
                                             driverId: null);
-                                        realtimeDatabase.updateDriverRequest(
-                                            driverId,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null);
+
+                                        realtimeDatabase
+                                            .deleteDriverRequest(driverId);
+
                                         HomePageMethods().getRequest(driverId,
                                             context, _settingModalBottomSheet);
                                       },
@@ -395,22 +381,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
       if (address == _address[0].locality) {
         try {
-          database = RealtimeDatabase(
+          realtimeDatabase = RealtimeDatabase(
               lat: cLoc.latitude, long: cLoc.longitude, driverId: driverId);
-          database.updateData(driverId, address);
+          realtimeDatabase.updateData(driverId, address);
           print(address);
         } catch (e) {
           //create database reference and set data to current location
-          database = RealtimeDatabase(
+          realtimeDatabase = RealtimeDatabase(
               lat: currentLocation.latitude,
               long: currentLocation.longitude,
               driverId: driverId);
-          database.setData(driverId, address);
+          realtimeDatabase.setData(driverId, address);
         }
       } else {
         if (address != 'temp') {
-          database = RealtimeDatabase(lat: null, long: null, driverId: null);
-          database.updateData(driverId, address);
+          realtimeDatabase =
+              RealtimeDatabase(lat: null, long: null, driverId: null);
+          realtimeDatabase.updateData(driverId, address);
         }
         if (this.mounted) {
           setState(() {
@@ -423,8 +410,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void goOfflineMethod() {
-    database = RealtimeDatabase(lat: null, long: null, driverId: null);
-    database.updateData(driverId, address);
+    realtimeDatabase = RealtimeDatabase(lat: null, long: null, driverId: null);
+    realtimeDatabase.updateData(driverId, address);
     locationSubscription.cancel();
   }
 
