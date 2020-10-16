@@ -5,9 +5,9 @@ import 'package:firebase_database/firebase_database.dart';
 class RealtimeDatabase {
   final double long;
   final double lat;
-  final String uid;
+  final String driverId;
 
-  RealtimeDatabase({this.lat, this.long, this.uid});
+  RealtimeDatabase({this.lat, this.long, this.driverId});
 
   //Rather then just writing FirebaseDatabase(), get the instance.
   DatabaseReference locationDataReference =
@@ -30,25 +30,26 @@ class RealtimeDatabase {
 
   //set current locationdata
   void setData(key, String state) {
-    LocationDataMy loc = LocationDataMy(lat, long, uid);
+    LocationDataMy loc = LocationDataMy(lat, long, driverId);
     locationDataReference.child(state).child("$key").push().set(loc.toJson());
   }
 
   //update current locationdata
   void updateData(key, String state) {
-    LocationDataMy loc = LocationDataMy(lat, long, uid);
+    LocationDataMy loc = LocationDataMy(lat, long, driverId);
     locationDataReference.child(state).child("$key").update(loc.toJson());
   }
 
   //set current delivery
-  void setCurrentDelivery() {
-    CurrentDeliveryData currentDeliveryData = CurrentDeliveryData(uid);
-    currentDeliveryReference.child(uid).set(currentDeliveryData.toJson());
+  void setCurrentDelivery(String userId) {
+    CurrentDeliveryData currentDeliveryData =
+        CurrentDeliveryData(driverId, userId);
+    currentDeliveryReference.child(userId).set(currentDeliveryData.toJson());
   }
 
   //delete request
   void updateDriverRequest(
-      String _did,
+      String driverId,
       String pickUpAddress,
       String dropAddress,
       double distance,
@@ -56,12 +57,13 @@ class RealtimeDatabase {
       double pickLat,
       double pickLong,
       double destLat,
-      double destLong) {
+      double destLong,
+      String userId) {
     DeliveryRequest request = DeliveryRequest(pickUpAddress, dropAddress,
-        distance, fare, pickLat, pickLong, destLat, destLong);
+        distance, fare, pickLat, pickLong, destLat, destLong, userId);
     deliverRequestsReference
         .child("Drivers")
-        .child(_did)
+        .child(driverId)
         .update(request.toJson());
   }
 }
@@ -85,15 +87,17 @@ class LocationDataMy {
 }
 
 class CurrentDeliveryData {
-  String uid;
+  String driverId;
+  String userId;
 
-  CurrentDeliveryData(this.uid);
+  CurrentDeliveryData(this.driverId, this.userId);
 
   CurrentDeliveryData.fromSnapshot(DataSnapshot snapshot)
-      : uid = snapshot.value["uid"];
+      : driverId = snapshot.value["driverId"],
+        userId = snapshot.value["userId"];
 
   toJson() {
-    return {"uid": uid};
+    return {"driverId": driverId, "userId": userId};
   }
 }
 
@@ -106,9 +110,18 @@ class DeliveryRequest {
   double pickLong;
   double destLat;
   double destLong;
+  String userId;
 
-  DeliveryRequest(this.pickUpAddress, this.dropAddress, this.distance,
-      this.fare, this.pickLat, this.pickLong, this.destLat, this.destLong);
+  DeliveryRequest(
+      this.pickUpAddress,
+      this.dropAddress,
+      this.distance,
+      this.fare,
+      this.pickLat,
+      this.pickLong,
+      this.destLat,
+      this.destLong,
+      this.userId);
 
   DeliveryRequest.fromSnapshot(DataSnapshot snapshot)
       : pickUpAddress = snapshot.value["pickUpAddress"],
@@ -118,7 +131,8 @@ class DeliveryRequest {
         pickLat = snapshot.value["pickLat"],
         pickLong = snapshot.value["pickLong"],
         destLat = snapshot.value["destLat"],
-        destLong = snapshot.value["destLong"];
+        destLong = snapshot.value["destLong"],
+        userId = snapshot.value["userId"];
 
   toJson() {
     return {
@@ -130,6 +144,7 @@ class DeliveryRequest {
       'pickLong': pickLong,
       'destLat': destLat,
       'destLong': destLong,
+      'userId': userId
     };
   }
 }

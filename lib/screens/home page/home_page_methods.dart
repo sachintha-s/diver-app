@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:driver_app/screens/tracking%20page/traking_page.dart';
 import 'package:driver_app/services/database/database.dart';
-import 'package:driver_app/services/realtime%20databse/realtime_databse.dart';
+import 'package:driver_app/services/realtime%20databse/realtime_database.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -45,7 +45,7 @@ class HomePageMethods {
   }
 
   void getRequest(
-      String uid,
+      String driverId,
       BuildContext context,
       _settingModalBottomSheet(
     context,
@@ -53,7 +53,8 @@ class HomePageMethods {
     String dropAddress,
     double distance,
     int fare,
-    String uid,
+    String driverId,
+    String userId,
     LatLng pickUpLocation,
   )) {
     try {
@@ -66,14 +67,14 @@ class HomePageMethods {
 
       StreamSubscription<Event> deliverRequestsSubscription;
       deliverRequestsSubscription = deliverRequestsReference
-          .child(uid)
+          .child(driverId)
           .onChildAdded
           .listen((event) async {
         if (isNotTriggered) {
           print("Request has been sent");
           isNotTriggered = !isNotTriggered;
           DataSnapshot dataSnapshot = await deliverRequestsReference
-              .child(uid)
+              .child(driverId)
               .once()
               .then((value) => value);
 
@@ -81,6 +82,7 @@ class HomePageMethods {
           String dropAddress = dataSnapshot.value["dropAddress"];
           double distance = dataSnapshot.value["distance"];
           int fare = dataSnapshot.value["fare"];
+          String userId = dataSnapshot.value["uid"];
 
           LatLng pickUpLocation = LatLng(
               dataSnapshot.value["pickLat"], dataSnapshot.value["pickLong"]);
@@ -93,7 +95,8 @@ class HomePageMethods {
             dropAddress,
             distance,
             fare,
-            uid,
+            driverId,
+            userId,
             pickUpLocation,
           );
         }
@@ -102,7 +105,7 @@ class HomePageMethods {
         try {
           if (Navigator.of(context).canPop()) {
             Navigator.pop(context);
-            getRequest(uid, context, _settingModalBottomSheet);
+            getRequest(driverId, context, _settingModalBottomSheet);
           }
         } catch (e) {
           print(e);
