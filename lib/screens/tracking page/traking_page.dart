@@ -1,17 +1,18 @@
 import 'dart:async';
+<<<<<<< Updated upstream
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/screens/home%20page/home_page.dart';
 import 'package:driver_app/screens/home%20page/home_page_methods.dart';
+=======
+>>>>>>> Stashed changes
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
 import 'package:driver_app/services/database/database.dart';
-import 'package:driver_app/services/realtime%20databse/realtime_databse.dart';
+import 'package:driver_app/services/realtime%20databse/realtime_database.dart';
 import 'package:driver_app/shared/map_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:geocoder/geocoder.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -106,8 +107,6 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
     location = new Location();
     pickUpLocation = widget.pickUpLocation;
     showPinsOnMap();
-    // setPolylines(driverCurrentLocation, pickUpLocation, polylinePoints,
-    //     polylineCoordinates, _polylines);
   }
 
   void showPinsOnMap() {

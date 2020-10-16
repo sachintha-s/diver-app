@@ -6,7 +6,7 @@ import 'package:driver_app/screens/tracking%20page/traking_page.dart';
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
 import 'package:driver_app/services/database/database.dart';
-import 'package:driver_app/services/realtime%20databse/realtime_databse.dart';
+import 'package:driver_app/services/realtime%20databse/realtime_database.dart';
 import 'package:driver_app/shared/circular_indicator.dart';
 import 'package:driver_app/shared/map_utils.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   //create auth variable
   Auth auth;
-  String uid;
+  String driverId;
 
   String address = "temp";
 
@@ -94,9 +94,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
     //create auth instance
     auth = AuthProvider.of(context).auth;
     auth.currentUser().then((user) {
-      uid = user.uid;
-      HomePageMethods().getRequest(uid, context, _settingModalBottomSheet);
+      driverId = user.uid;
+      HomePageMethods().getRequest(driverId, context, _settingModalBottomSheet);
       print("testinng");
+      print("driverID : " + driverId);
     });
 
     location = new Location();
@@ -108,7 +109,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
     String dropAddress,
     double distance,
     int fare,
-    String uid,
+    String driverId,
+    String userId,
     LatLng pickUpLocation,
   ) {
     showModalBottomSheet(
@@ -212,8 +214,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                               : pickUpAddress.substring(0, 15) +
                                                   "...",
                                           style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,),
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -248,8 +251,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                               : dropAddress.substring(0, 15) +
                                                   "...",
                                           style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,),
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -281,11 +285,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                         setState(() {
                                           loading = true;
                                         });
-                                        RealtimeDatabase(uid: uid)
-                                            .setCurrentDelivery();
-                                        RealtimeDatabase(uid: uid)
+                                        RealtimeDatabase(driverId: driverId)
+                                            .setCurrentDelivery(userId);
+                                        RealtimeDatabase(driverId: driverId)
                                             .updateDriverRequest(
-                                                uid,
+                                                driverId,
+                                                null,
                                                 null,
                                                 null,
                                                 null,
@@ -307,7 +312,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                             dropAddress: dropAddress,
                                             fare: fare.toString(),
                                             disance: distance.toString(),
-
                                             pickUpLocation: pickUpLocation,
                                           );
                                         }));
@@ -338,9 +342,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                         Navigator.pop(context);
                                         RealtimeDatabase realtimeDatabase;
                                         realtimeDatabase = RealtimeDatabase(
-                                            lat: null, long: null, uid: null);
+                                            lat: null,
+                                            long: null,
+                                            driverId: null);
                                         realtimeDatabase.updateDriverRequest(
-                                            uid,
+                                            driverId,
+                                            null,
                                             null,
                                             null,
                                             null,
@@ -349,7 +356,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                             null,
                                             null,
                                             null);
-                                        HomePageMethods().getRequest(uid,
+                                        HomePageMethods().getRequest(driverId,
                                             context, _settingModalBottomSheet);
                                       },
                                       color: Colors.red,
@@ -389,21 +396,21 @@ class _DriverHomePageState extends State<DriverHomePage> {
       if (address == _address[0].locality) {
         try {
           database = RealtimeDatabase(
-              lat: cLoc.latitude, long: cLoc.longitude, uid: uid);
-          database.updateData(uid, address);
+              lat: cLoc.latitude, long: cLoc.longitude, driverId: driverId);
+          database.updateData(driverId, address);
           print(address);
         } catch (e) {
           //create database reference and set data to current location
           database = RealtimeDatabase(
               lat: currentLocation.latitude,
               long: currentLocation.longitude,
-              uid: uid);
-          database.setData(uid, address);
+              driverId: driverId);
+          database.setData(driverId, address);
         }
       } else {
         if (address != 'temp') {
-          database = RealtimeDatabase(lat: null, long: null, uid: null);
-          database.updateData(uid, address);
+          database = RealtimeDatabase(lat: null, long: null, driverId: null);
+          database.updateData(driverId, address);
         }
         if (this.mounted) {
           setState(() {
@@ -416,8 +423,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void goOfflineMethod() {
-    database = RealtimeDatabase(lat: null, long: null, uid: null);
-    database.updateData(uid, address);
+    database = RealtimeDatabase(lat: null, long: null, driverId: null);
+    database.updateData(driverId, address);
     locationSubscription.cancel();
   }
 
