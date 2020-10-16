@@ -270,6 +270,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                 isCompleate = true;
               });
               //send massage to user for inform the delivery has compleated.
+              
 
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => DriverHomePage()));
@@ -338,6 +339,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
                           child: RaisedButton(
                             child: Text(
                               "CONFIRM",
@@ -361,6 +363,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
                           child: RaisedButton(
                             child: Text(
                               "CANCEL",
