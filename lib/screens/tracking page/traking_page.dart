@@ -1,11 +1,5 @@
 import 'dart:async';
-<<<<<<< Updated upstream
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/screens/home%20page/home_page.dart';
-import 'package:driver_app/screens/home%20page/home_page_methods.dart';
-=======
->>>>>>> Stashed changes
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
 import 'package:driver_app/services/database/database.dart';
@@ -269,7 +263,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                 isCompleate = true;
               });
               //send massage to user for inform the delivery has compleated.
-              
+
 
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => DriverHomePage()));
