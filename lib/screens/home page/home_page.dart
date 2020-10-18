@@ -1,18 +1,14 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/screens/home%20page/home_page_methods.dart';
 import 'package:driver_app/screens/tracking%20page/traking_page.dart';
 import 'package:driver_app/services/auth/auth.dart';
 import 'package:driver_app/services/auth/auth_provider.dart';
-import 'package:driver_app/services/database/database.dart';
 import 'package:driver_app/services/realtime%20databse/realtime_database.dart';
 import 'package:driver_app/shared/circular_indicator.dart';
 import 'package:driver_app/shared/map_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -287,10 +283,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                         });
                                         RealtimeDatabase(driverId: driverId)
                                             .setCurrentDelivery(userId);
-                                        realtimeDatabase = RealtimeDatabase(
-                                            lat: null,
-                                            long: null,
-                                            driverId: null);
+                                        realtimeDatabase =
+                                            RealtimeDatabase(driverId: null);
                                         realtimeDatabase
                                             .deleteDriverRequest(driverId);
                                         await Future.delayed(
@@ -334,10 +328,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                               BorderRadius.circular(20)),
                                       onPressed: () async {
                                         Navigator.pop(context);
-                                        realtimeDatabase = RealtimeDatabase(
-                                            lat: null,
-                                            long: null,
-                                            driverId: null);
+                                        realtimeDatabase =
+                                            RealtimeDatabase(driverId: null);
 
                                         realtimeDatabase
                                             .deleteDriverRequest(driverId);
@@ -381,23 +373,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
       if (address == _address[0].locality) {
         try {
-          realtimeDatabase = RealtimeDatabase(
-              lat: cLoc.latitude, long: cLoc.longitude, driverId: driverId);
-          realtimeDatabase.updateData(driverId, address);
+          realtimeDatabase = RealtimeDatabase(driverId: driverId);
+          realtimeDatabase.updateData(
+              cLoc.latitude, cLoc.longitude, driverId, address);
           print(address);
         } catch (e) {
           //create database reference and set data to current location
-          realtimeDatabase = RealtimeDatabase(
-              lat: currentLocation.latitude,
-              long: currentLocation.longitude,
-              driverId: driverId);
-          realtimeDatabase.setData(driverId, address);
+          realtimeDatabase = RealtimeDatabase(driverId: driverId);
+          realtimeDatabase.setData(currentLocation.latitude,
+              currentLocation.longitude, driverId, address);
         }
       } else {
         if (address != 'temp') {
-          realtimeDatabase =
-              RealtimeDatabase(lat: null, long: null, driverId: null);
-          realtimeDatabase.updateData(driverId, address);
+          realtimeDatabase = RealtimeDatabase(driverId: null);
+          realtimeDatabase.updateData(null, null, driverId, address);
         }
         if (this.mounted) {
           setState(() {
@@ -410,8 +399,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void goOfflineMethod() {
-    realtimeDatabase = RealtimeDatabase(lat: null, long: null, driverId: null);
-    realtimeDatabase.updateData(driverId, address);
+    realtimeDatabase = RealtimeDatabase(driverId: null);
+    realtimeDatabase.updateData(null, null, driverId, address);
     locationSubscription.cancel();
   }
 
