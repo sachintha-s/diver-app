@@ -220,7 +220,7 @@ class _AuthScreeenState extends State<AuthScreeen> {
                 //add countrycodepicker to get the postal code of the phone number
                 Container(
                   child: CountryCodePicker(
-                    initialSelection: "+94",
+                    initialSelection: "us",
                     // dialogSize: Size(50, 200),
                     onInit: (value) {
                       //countryCode set to initial value
@@ -242,8 +242,6 @@ class _AuthScreeenState extends State<AuthScreeen> {
                       validator: (value) {
                         if (value.isEmpty) {
                           return "Mobile Number Can't be Empty";
-                        } else if (value.length != 9) {
-                          return "Mobile Number is Invalid";
                         } else {
                           return null;
                         }
