@@ -3,11 +3,9 @@ import 'package:firebase_database/firebase_database.dart';
 // import 'package:firebase_core/firebase_core.dart'; not nessecary
 
 class RealtimeDatabase {
-  final double long;
-  final double lat;
   final String driverId;
 
-  RealtimeDatabase({this.lat, this.long, this.driverId});
+  RealtimeDatabase({this.driverId});
 
   //Rather then just writing FirebaseDatabase(), get the instance.
   DatabaseReference locationDataReference =
@@ -29,14 +27,14 @@ class RealtimeDatabase {
   }
 
   //set current locationdata
-  void setData(key, String state) {
-    LocationDataMy loc = LocationDataMy(lat, long, driverId);
+  void setData(lat, long, key, String state) {
+    DriverLocationData loc = DriverLocationData(lat, long, driverId);
     locationDataReference.child(state).child("$key").push().set(loc.toJson());
   }
 
   //update current locationdata
-  void updateData(key, String state) {
-    LocationDataMy loc = LocationDataMy(lat, long, driverId);
+  void updateData(lat, long, key, String state) {
+    DriverLocationData loc = DriverLocationData(lat, long, driverId);
     locationDataReference.child(state).child("$key").update(loc.toJson());
   }
 
@@ -49,7 +47,8 @@ class RealtimeDatabase {
 
   //delete request
   void deleteDriverRequest(
-      String driverId,) {
+    String driverId,
+  ) {
     deliverRequestsReference.child("Drivers").child(driverId).remove();
   }
 
@@ -75,14 +74,14 @@ class RealtimeDatabase {
 }
 
 //create locationData ref class
-class LocationDataMy {
+class DriverLocationData {
   double lat;
   double long;
   String uid;
 
-  LocationDataMy(this.lat, this.long, this.uid);
+  DriverLocationData(this.lat, this.long, this.uid);
 
-  LocationDataMy.fromSnapshot(DataSnapshot snapshot)
+  DriverLocationData.fromSnapshot(DataSnapshot snapshot)
       : lat = snapshot.value["lat"],
         long = snapshot.value["long"],
         uid = snapshot.value["uid"];
